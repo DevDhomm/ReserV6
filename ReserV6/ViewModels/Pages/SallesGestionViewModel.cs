@@ -12,6 +12,28 @@ namespace ReserV6.ViewModels.Pages
         private RepositoryManager? _repositoryManager;
         private List<Salle> _allSalles = [];
 
+        // Types de salles disponibles
+        public ObservableCollection<string> RoomTypes { get; } = new()
+        {
+            "Réunion",
+            "Conférence",
+            "Formation",
+            "Bureau",
+            "Autre"
+        };
+
+        // Types d'équipements disponibles
+        public ObservableCollection<string> EquipementTypes { get; } = new()
+        {
+            "Vidéoprojecteur",
+            "Tableau interactif",
+            "Écran plat",
+            "Système audio",
+            "Ordinateur",
+            "Mobilier",
+            "Autre"
+        };
+
         [ObservableProperty]
         private ObservableCollection<Salle> _salles = [];
 
