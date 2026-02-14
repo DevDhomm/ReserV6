@@ -1,0 +1,11 @@
+﻿global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using System;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.Linq;
+global using System.Windows;
+global using ReserV6.Models;
+global using ReserV6.Services;
+global using ReserV6.Services.Database;
+global using ReserV6.Services.Database.Repositories;
