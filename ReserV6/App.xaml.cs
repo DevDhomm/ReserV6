@@ -50,8 +50,6 @@ namespace ReserV6
                 services.AddSingleton<ReservationsViewModel>();
                 services.AddSingleton<RoomsPage>();
                 services.AddSingleton<RoomsViewModel>();
-                services.AddSingleton<UsersPage>();
-                services.AddSingleton<UsersViewModel>();
                 services.AddSingleton<SallesGestionPage>();
                 services.AddSingleton<SallesGestionViewModel>();
 

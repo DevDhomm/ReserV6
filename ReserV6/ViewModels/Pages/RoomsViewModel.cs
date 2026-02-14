@@ -32,10 +32,13 @@ namespace ReserV6.ViewModels.Pages
         [ObservableProperty]
         private ObservableCollection<int?> _floors = new() { null };
 
+        [ObservableProperty]
+        private string _equipementSearchText = string.Empty;
+
         [RelayCommand]
         public void ApplyFilters()
         {
-            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Applying filters - SearchText: {_searchText}, MinCapacity: {_minCapacity}, Floor: {_selectedFloor}");
+            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Applying filters - SearchText: {_searchText}, MinCapacity: {_minCapacity}, Floor: {_selectedFloor}, Equipment: {_equipementSearchText}");
 
             var filtered = _allRooms.AsEnumerable();
 
@@ -59,6 +62,23 @@ namespace ReserV6.ViewModels.Pages
             if (_selectedFloor.HasValue)
             {
                 filtered = filtered.Where(r => r.Etage == _selectedFloor.Value);
+            }
+
+            // Filter by equipment
+            if (!string.IsNullOrWhiteSpace(_equipementSearchText))
+            {
+                var searchTerm = _equipementSearchText.ToLower();
+                filtered = filtered.Where(r =>
+                {
+                    if (r.Equipements == null || r.Equipements.Count == 0)
+                        return false;
+
+                    return r.Equipements.Any(e =>
+                        e.Nom.ToLower().Contains(searchTerm) ||
+                        e.Type.ToLower().Contains(searchTerm) ||
+                        e.Description.ToLower().Contains(searchTerm)
+                    );
+                });
             }
 
             FilteredRooms = filtered.ToList();
@@ -175,6 +195,42 @@ namespace ReserV6.ViewModels.Pages
                 System.Diagnostics.Debug.WriteLine($"RoomsViewModel Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
             }
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement du texte de recherche d'équipement
+        /// </summary>
+        partial void OnEquipementSearchTextChanged(string oldValue, string newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Equipment search changed to '{newValue}'");
+            ApplyFilters();
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement du texte de recherche
+        /// </summary>
+        partial void OnSearchTextChanged(string oldValue, string newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Search text changed to '{newValue}'");
+            ApplyFilters();
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement de la capacité minimale
+        /// </summary>
+        partial void OnMinCapacityChanged(int oldValue, int newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Min capacity changed to {newValue}");
+            ApplyFilters();
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement de l'étage sélectionné
+        /// </summary>
+        partial void OnSelectedFloorChanged(int? oldValue, int? newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"RoomsViewModel: Selected floor changed to {newValue}");
+            ApplyFilters();
         }
     }
 }

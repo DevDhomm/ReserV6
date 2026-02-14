@@ -234,17 +234,16 @@ namespace ReserV6.ViewModels.Pages
         }
 
         /// <summary>
-        /// Applique le filtrage par statut à la liste des réservations
+        /// Applique le filtrage par statut et équipement à la liste des réservations
         /// </summary>
         private void ApplyStatusFilter()
         {
-            if (SelectedStatusFilter == "Tous")
+            var filtered = Reservations;
+
+            // Filtrer par statut
+            if (SelectedStatusFilter != "Tous")
             {
-                FilteredReservations = Reservations;
-            }
-            else
-            {
-                var filtered = Reservations
+                filtered = filtered
                     .Where(r =>
                     {
                         // Récalculer le statut dynamique pour chaque réservation
@@ -263,9 +262,9 @@ namespace ReserV6.ViewModels.Pages
                         return status == SelectedStatusFilter;
                     })
                     .ToList();
-
-                FilteredReservations = filtered;
             }
+
+            FilteredReservations = filtered;
 
             System.Diagnostics.Debug.WriteLine(
                 $"ReservationsViewModel: Filter applied, showing {FilteredReservations.Count()} of {Reservations.Count()} reservations"

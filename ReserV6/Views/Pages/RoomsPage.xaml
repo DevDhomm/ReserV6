@@ -38,6 +38,7 @@
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- Search by Name -->
@@ -72,8 +73,20 @@
             />
         </StackPanel>
 
+        <!-- Search by Equipment -->
+        <StackPanel Grid.Column="3" Orientation="Vertical" Margin="0,0,16,0">
+          <TextBlock Text="Recherche par equipement" FontSize="12" Margin="0,0,0,4" />
+          <TextBox 
+            x:Name="EquipementSearchBox"
+            Text="{Binding ViewModel.EquipementSearchText, UpdateSourceTrigger=PropertyChanged}"
+            Padding="8,6"
+            Width="200"
+            ToolTip="Recherchez par nom ou type d'equipement"
+            />
+        </StackPanel>
+
         <!-- Apply Filters Button -->
-        <StackPanel Grid.Column="3" VerticalAlignment="Bottom">
+        <StackPanel Grid.Column="4" VerticalAlignment="Bottom">
           <ui:Button 
             Content="Appliquer les filtres"
             Command="{Binding ViewModel.ApplyFiltersCommand}"

@@ -25,12 +25,6 @@ namespace ReserV6.ViewModels.Windows
             },
             new NavigationViewItem()
             {
-                Content = "Users",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.People24 },
-                TargetPageType = typeof(Views.Pages.UsersPage)
-            },
-            new NavigationViewItem()
-            {
                 Content = "Gestion Salles",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SallesGestionPage)
