@@ -17,24 +17,24 @@
   ScrollViewer.CanContentScroll="False"
   mc:Ignorable="d"
 >
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 
-    <!-- Header -->
-    <StackPanel Grid.Row="0" Margin="16" Orientation="Vertical">
-      <TextBlock FontSize="24" FontWeight="Bold" Text="Gestion des Salles" />
-      <TextBlock Margin="0,8,0,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Créez, modifiez et supprimez les salles disponibles" />
-    </StackPanel>
+		<!-- Header -->
+		<StackPanel Grid.Row="0" Margin="16" Orientation="Vertical">
+			<TextBlock FontSize="24" FontWeight="Bold" Text="Gestion des Salles" />
+			<TextBlock Margin="0,8,0,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Créez, modifiez et supprimez les salles disponibles" />
+		</StackPanel>
 
-    <!-- Search and Add Button Bar -->
-    <StackPanel Grid.Row="1" Margin="16,0,16,16" Orientation="Vertical">
-      <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
-        <TextBlock Text="Rechercher:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,12,0" />
-        <TextBox
+		<!-- Search and Add Button Bar -->
+		<StackPanel Grid.Row="1" Margin="16,0,16,16" Orientation="Vertical">
+			<StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
+				<TextBlock Text="Rechercher:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,12,0" />
+				<TextBox
           Name="SearchTextBox"
           Width="300"
           Height="36"
@@ -44,7 +44,7 @@
           VerticalAlignment="Center"
           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         />
-        <Button
+				<Button
           Name="SearchButton"
           Width="100"
           Height="36"
@@ -54,7 +54,7 @@
           VerticalAlignment="Center"
           Margin="0,0,12,0"
         />
-        <Button
+				<Button
           Name="AddButton"
           Width="150"
           Height="36"
@@ -64,17 +64,17 @@
           VerticalAlignment="Center"
           Margin="0,0,0,0"
         />
-      </StackPanel>
-      <TextBlock
+			</StackPanel>
+			<TextBlock
         Text="💡 Tip: Vous pouvez chercher par nom de salle, description, type ou équipements"
         FontSize="11"
         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
         Margin="0,4,0,0"
       />
-    </StackPanel>
+		</StackPanel>
 
-    <!-- DataGrid -->
-    <DataGrid
+		<!-- DataGrid -->
+		<DataGrid
       Grid.Row="2"
       Margin="16"
       ItemsSource="{Binding ViewModel.Salles}"
@@ -85,80 +85,80 @@
       Background="{DynamicResource ApplicationBackgroundBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     >
-      <DataGrid.Columns>
-        <!-- Nom -->
-        <DataGridTextColumn
+			<DataGrid.Columns>
+				<!-- Nom -->
+				<DataGridTextColumn
           Header="Nom"
           Binding="{Binding Nom}"
           Width="150"
           IsReadOnly="True"
         />
 
-        <!-- Description -->
-        <DataGridTextColumn
+				<!-- Description -->
+				<DataGridTextColumn
           Header="Description"
           Binding="{Binding Description}"
           Width="200"
           IsReadOnly="True"
         />
 
-        <!-- Capacité -->
-        <DataGridTextColumn
+				<!-- Capacité -->
+				<DataGridTextColumn
           Header="Capacité"
           Binding="{Binding Capacite}"
           Width="80"
           IsReadOnly="True"
         />
 
-        <!-- Type -->
-        <DataGridTextColumn
+				<!-- Type -->
+				<DataGridTextColumn
           Header="Type"
           Binding="{Binding Type}"
           Width="100"
           IsReadOnly="True"
         />
 
-        <!-- Étage -->
-        <DataGridTextColumn
+				<!-- Étage -->
+				<DataGridTextColumn
           Header="Étage"
           Binding="{Binding Etage}"
           Width="60"
           IsReadOnly="True"
         />
 
-        <!-- Disponibilité -->
-        <DataGridCheckBoxColumn
+				<!-- Disponibilité -->
+				<DataGridCheckBoxColumn
           Header="Disponible"
           Binding="{Binding Disponibilite}"
           Width="80"
           IsReadOnly="True"
         />
 
-        <!-- Équipements -->
-        <DataGridTemplateColumn
+				<!-- Équipements -->
+				<DataGridTemplateColumn
           Header="Équipements"
           Width="150"
         >
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <TextBlock
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<TextBlock
                 Text="{Binding Equipements.Count, StringFormat='{}Nbre: {0}'}"
                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                 VerticalAlignment="Center"
               />
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
 
-        <!-- Actions -->
-        <DataGridTemplateColumn
+				<!-- Actions -->
+				<DataGridTemplateColumn
           Header="Actions"
           Width="150"
         >
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                <Button
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+								<Button
                   Name="EditButton"
                   Width="60"
                   Height="32"
@@ -167,7 +167,7 @@
                   Tag="{Binding}"
                   Padding="8,4"
                 />
-                <Button
+								<Button
                   Name="DeleteButton"
                   Width="60"
                   Height="32"
@@ -176,23 +176,23 @@
                   Tag="{Binding}"
                   Padding="8,4"
                 />
-              </StackPanel>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-      </DataGrid.Columns>
-    </DataGrid>
+							</StackPanel>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
 
-    <!-- Modal Form Overlay -->
-    <Grid
+		<!-- Modal Form Overlay -->
+		<Grid
       Grid.Row="0"
       Grid.RowSpan="3"
       Background="#7F000000"
       Visibility="{Binding ViewModel.IsFormVisible, Converter={StaticResource BoolToVisibilityConverter}}"
       ZIndex="100"
     >
-      <!-- Form Container -->
-      <Border
+			<!-- Form Container -->
+			<Border
         Width="500"
         MaxHeight="650"
         Padding="24"
@@ -203,10 +203,10 @@
         VerticalAlignment="Center"
         HorizontalAlignment="Center"
       >
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel Orientation="Vertical">
-            <!-- Form Title -->
-            <TextBlock
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<StackPanel Orientation="Vertical">
+						<!-- Form Title -->
+						<TextBlock
               FontSize="18"
               FontWeight="Bold"
               Text="{Binding ViewModel.FormTitle}"
@@ -214,31 +214,31 @@
               Margin="0,0,0,8"
             />
 
-            <!-- Nom Field -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <TextBlock
+						<!-- Nom Field -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<TextBlock
                 Text="Nom de la salle *"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Margin="0,0,0,4"
               />
-              <TextBox
+							<TextBox
                 Height="36"
                 Text="{Binding ViewModel.SalleNom, UpdateSourceTrigger=PropertyChanged}"
                 Padding="12,8"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               />
-            </StackPanel>
+						</StackPanel>
 
-            <!-- Description Field -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <TextBlock
+						<!-- Description Field -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<TextBlock
                 Text="Description"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Margin="0,0,0,4"
               />
-              <TextBox
+							<TextBox
                 Height="60"
                 Text="{Binding ViewModel.SalleDescription, UpdateSourceTrigger=PropertyChanged}"
                 Padding="12,8"
@@ -246,64 +246,64 @@
                 VerticalAlignment="Top"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               />
-            </StackPanel>
+						</StackPanel>
 
-            <!-- Capacité Field -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <TextBlock
+						<!-- Capacité Field -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<TextBlock
                 Text="Capacité (personnes) *"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Margin="0,0,0,4"
               />
-              <TextBox
+							<TextBox
                 Height="36"
                 Text="{Binding ViewModel.SalleCapacite, UpdateSourceTrigger=PropertyChanged}"
                 Padding="12,8"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               />
-            </StackPanel>
+						</StackPanel>
 
-            <!-- Type Field -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <TextBlock
+						<!-- Type Field -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<TextBlock
                 Text="Type de salle"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Margin="0,0,0,4"
               />
-              <ComboBox
+							<ComboBox
                 Height="36"
                 SelectedValue="{Binding ViewModel.SalleType}"
                 Padding="12,8"
                 VerticalAlignment="Center"
               >
-                <ComboBoxItem>Réunion</ComboBoxItem>
-                <ComboBoxItem>Conférence</ComboBoxItem>
-                <ComboBoxItem>Formation</ComboBoxItem>
-                <ComboBoxItem>Bureau</ComboBoxItem>
-                <ComboBoxItem>Autre</ComboBoxItem>
-              </ComboBox>
-            </StackPanel>
+								<ComboBoxItem>Réunion</ComboBoxItem>
+								<ComboBoxItem>Conférence</ComboBoxItem>
+								<ComboBoxItem>Formation</ComboBoxItem>
+								<ComboBoxItem>Bureau</ComboBoxItem>
+								<ComboBoxItem>Autre</ComboBoxItem>
+							</ComboBox>
+						</StackPanel>
 
-            <!-- Étage Field -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <TextBlock
+						<!-- Étage Field -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<TextBlock
                 Text="Étage"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Margin="0,0,0,4"
               />
-              <TextBox
+							<TextBox
                 Height="36"
                 Text="{Binding ViewModel.SalleEtage, UpdateSourceTrigger=PropertyChanged}"
                 Padding="12,8"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               />
-            </StackPanel>
+						</StackPanel>
 
-            <!-- Disponibilité CheckBox -->
-            <CheckBox
+						<!-- Disponibilité CheckBox -->
+						<CheckBox
               Content="Salle disponible"
               IsChecked="{Binding ViewModel.SalleDispo}"
               FontWeight="SemiBold"
@@ -313,17 +313,17 @@
               Margin="0,0,0,12"
             />
 
-            <!-- Équipements Section -->
-            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-              <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                <TextBlock
+						<!-- Équipements Section -->
+						<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+							<StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+								<TextBlock
                   Text="Équipements de la salle"
                   FontWeight="SemiBold"
                   Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                   VerticalAlignment="Center"
                   Margin="0,0,12,0"
                 />
-                <Button
+								<Button
                   Name="AddEquipementButton"
                   Width="100"
                   Height="28"
@@ -332,8 +332,8 @@
                   Padding="8,4"
                   VerticalAlignment="Center"
                 />
-              </StackPanel>
-              <DataGrid
+							</StackPanel>
+							<DataGrid
                 Height="150"
                 ItemsSource="{Binding ViewModel.EquipementsDeSalleSelectionnee}"
                 SelectedItem="{Binding ViewModel.SelectedEquipement}"
@@ -343,33 +343,33 @@
                 Background="{DynamicResource ApplicationBackgroundBrush}"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               >
-                <DataGrid.Columns>
-                  <DataGridTextColumn
+								<DataGrid.Columns>
+									<DataGridTextColumn
                     Header="Nom"
                     Binding="{Binding Nom}"
                     Width="*"
                     IsReadOnly="True"
                   />
-                  <DataGridTextColumn
+									<DataGridTextColumn
                     Header="Type"
                     Binding="{Binding Type}"
                     Width="80"
                     IsReadOnly="True"
                   />
-                  <DataGridCheckBoxColumn
+									<DataGridCheckBoxColumn
                     Header="Fonctionnel"
                     Binding="{Binding EstFonctionnel}"
                     Width="70"
                     IsReadOnly="True"
                   />
-                  <DataGridTemplateColumn
+									<DataGridTemplateColumn
                     Header="Actions"
                     Width="120"
                   >
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,4,0">
-                          <Button
+										<DataGridTemplateColumn.CellTemplate>
+											<DataTemplate>
+												<StackPanel Orientation="Horizontal" Margin="0,0,4,0">
+													<Button
                             Name="EditEquipementButton"
                             Width="50"
                             Height="28"
@@ -379,7 +379,7 @@
                             Padding="4,2"
                             FontSize="11"
                           />
-                          <Button
+													<Button
                             Name="DeleteEquipementButton"
                             Width="50"
                             Height="28"
@@ -389,17 +389,17 @@
                             Padding="4,2"
                             FontSize="11"
                           />
-                        </StackPanel>
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-                </DataGrid.Columns>
-              </DataGrid>
-            </StackPanel>
+												</StackPanel>
+											</DataTemplate>
+										</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn>
+								</DataGrid.Columns>
+							</DataGrid>
+						</StackPanel>
 
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-              <Button
+						<!-- Buttons -->
+						<StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+							<Button
                 Name="SaveButton"
                 Width="180"
                 Height="36"
@@ -408,7 +408,7 @@
                 Padding="12,8"
                 Margin="0,0,12,0"
               />
-              <Button
+							<Button
                 Name="CancelButton"
                 Width="180"
                 Height="36"
@@ -416,22 +416,22 @@
                 Command="{Binding ViewModel.CancelFormCommand}"
                 Padding="12,8"
               />
-            </StackPanel>
-          </StackPanel>
-        </ScrollViewer>
-      </Border>
-    </Grid>
+						</StackPanel>
+					</StackPanel>
+				</ScrollViewer>
+			</Border>
+		</Grid>
 
-    <!-- Modal Form Overlay for Equipement -->
-    <Grid
+		<!-- Modal Form Overlay for Equipement -->
+		<Grid
       Grid.Row="0"
       Grid.RowSpan="3"
       Background="#7F000000"
       Visibility="{Binding ViewModel.IsEquipementFormVisible, Converter={StaticResource BoolToVisibilityConverter}}"
       ZIndex="101"
     >
-      <!-- Equipement Form Container -->
-      <Border
+			<!-- Equipement Form Container -->
+			<Border
         Width="450"
         Padding="24"
         Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -441,9 +441,9 @@
         VerticalAlignment="Center"
         HorizontalAlignment="Center"
       >
-        <StackPanel Orientation="Vertical">
-          <!-- Form Title -->
-          <TextBlock
+				<StackPanel Orientation="Vertical">
+					<!-- Form Title -->
+					<TextBlock
             FontSize="16"
             FontWeight="Bold"
             Text="Équipement"
@@ -451,31 +451,31 @@
             Margin="0,0,0,12"
           />
 
-          <!-- Nom Field -->
-          <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-            <TextBlock
+					<!-- Nom Field -->
+					<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+						<TextBlock
               Text="Nom de l'équipement *"
               FontWeight="SemiBold"
               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               Margin="0,0,0,4"
             />
-            <TextBox
+						<TextBox
               Height="36"
               Text="{Binding ViewModel.EquipementNom, UpdateSourceTrigger=PropertyChanged}"
               Padding="12,8"
               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
             />
-          </StackPanel>
+					</StackPanel>
 
-          <!-- Description Field -->
-          <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-            <TextBlock
+					<!-- Description Field -->
+					<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+						<TextBlock
               Text="Description"
               FontWeight="SemiBold"
               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               Margin="0,0,0,4"
             />
-            <TextBox
+						<TextBox
               Height="60"
               Text="{Binding ViewModel.EquipementDescription, UpdateSourceTrigger=PropertyChanged}"
               Padding="12,8"
@@ -483,35 +483,35 @@
               VerticalAlignment="Top"
               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
             />
-          </StackPanel>
+					</StackPanel>
 
-          <!-- Type Field -->
-          <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-            <TextBlock
+					<!-- Type Field -->
+					<StackPanel Orientation="Vertical" Margin="0,0,0,12">
+						<TextBlock
               Text="Type d'équipement *"
               FontWeight="SemiBold"
               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
               Margin="0,0,0,4"
             />
-            <ComboBox
+						<ComboBox
               Height="36"
               SelectedValue="{Binding ViewModel.EquipementType}"
               Padding="12,8"
               VerticalAlignment="Center"
               IsEditable="True"
             >
-              <ComboBoxItem>Vidéoprojecteur</ComboBoxItem>
-              <ComboBoxItem>Tableau interactif</ComboBoxItem>
-              <ComboBoxItem>Écran plat</ComboBoxItem>
-              <ComboBoxItem>Système audio</ComboBoxItem>
-              <ComboBoxItem>Ordinateur</ComboBoxItem>
-              <ComboBoxItem>Mobilier</ComboBoxItem>
-              <ComboBoxItem>Autre</ComboBoxItem>
-            </ComboBox>
-          </StackPanel>
+							<ComboBoxItem>Vidéoprojecteur</ComboBoxItem>
+							<ComboBoxItem>Tableau interactif</ComboBoxItem>
+							<ComboBoxItem>Écran plat</ComboBoxItem>
+							<ComboBoxItem>Système audio</ComboBoxItem>
+							<ComboBoxItem>Ordinateur</ComboBoxItem>
+							<ComboBoxItem>Mobilier</ComboBoxItem>
+							<ComboBoxItem>Autre</ComboBoxItem>
+						</ComboBox>
+					</StackPanel>
 
-          <!-- Fonctionnement CheckBox -->
-          <CheckBox
+					<!-- Fonctionnement CheckBox -->
+					<CheckBox
             Content="Équipement fonctionnel"
             IsChecked="{Binding ViewModel.EquipementEstFonctionnel}"
             FontWeight="SemiBold"
@@ -521,9 +521,9 @@
             Margin="0,0,0,16"
           />
 
-          <!-- Buttons -->
-          <StackPanel Orientation="Horizontal">
-            <Button
+					<!-- Buttons -->
+					<StackPanel Orientation="Horizontal" >
+						<Button
               Name="SaveEquipementButton"
               Width="170"
               Height="36"
@@ -532,17 +532,17 @@
               Padding="12,8"
               Margin="0,0,12,0"
             />
-            <Button
-              Name="CancelEquipementButton"
+						<Button
+              x:Name="CancelEquipementButton"
               Width="170"
               Height="36"
               Content="Annuler"
               Command="{Binding ViewModel.CancelEquipementFormCommand}"
               Padding="12,8"
             />
-          </StackPanel>
-        </StackPanel>
-      </Border>
-    </Grid>
-  </Grid>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+		</Grid>
+	</Grid>
 </Page>

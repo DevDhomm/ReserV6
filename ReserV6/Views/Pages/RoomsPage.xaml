@@ -39,6 +39,7 @@
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- Search by Name -->
@@ -75,14 +76,57 @@
 
         <!-- Search by Equipment -->
         <StackPanel Grid.Column="3" Orientation="Vertical" Margin="0,0,16,0">
-          <TextBlock Text="Recherche par equipement" FontSize="12" Margin="0,0,0,4" />
-          <TextBox 
-            x:Name="EquipementSearchBox"
-            Text="{Binding ViewModel.EquipementSearchText, UpdateSourceTrigger=PropertyChanged}"
-            Padding="8,6"
-            Width="200"
-            ToolTip="Recherchez par nom ou type d'equipement"
-            />
+          <TextBlock Text="Filtrer par equipement" FontSize="12" Margin="0,0,0,4" />
+          <Border 
+            BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Height="80"
+            Width="250"
+            Background="{DynamicResource ControlBackgroundBrush}"
+            >
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="4">
+              <ItemsControl 
+                ItemsSource="{Binding ViewModel.AvailableEquipements}"
+                >
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <CheckBox 
+                      Content="{Binding Equipement.Nom}"
+                      ToolTip="{Binding Equipement.Type}"
+                      IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                      Margin="4,2"
+                      />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+            </ScrollViewer>
+          </Border>
+          <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+            <TextBlock 
+              Text="📋"
+              FontSize="10"
+              Margin="0,0,4,0"
+              />
+            <TextBlock 
+              Text="{Binding ViewModel.SelectedEquipements.Count, StringFormat='Sélectionné: {0}'}"
+              FontSize="10"
+              Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+              />
+            <ui:Button 
+              Content="Réinitialiser"
+              Command="{Binding ViewModel.ClearEquipementsCommand}"
+              Padding="4,0"
+              Margin="8,0,0,0"
+              FontSize="10"
+              Height="20"
+              />
+          </StackPanel>
         </StackPanel>
 
         <!-- Apply Filters Button -->
@@ -90,6 +134,15 @@
           <ui:Button 
             Content="Appliquer les filtres"
             Command="{Binding ViewModel.ApplyFiltersCommand}"
+            Padding="12,8"
+            />
+        </StackPanel>
+
+        <!-- Reset All Filters Button -->
+        <StackPanel Grid.Column="5" VerticalAlignment="Bottom" Margin="8,0,0,0">
+          <ui:Button 
+            Content="🔄 Reset"
+            Command="{Binding ViewModel.ResetAllFiltersCommand}"
             Padding="12,8"
             />
         </StackPanel>
@@ -115,6 +168,7 @@
               BorderThickness="1"
               CornerRadius="8"
               Padding="16"
+              Opacity="{Binding Disponibilite, Converter={StaticResource AvailabilityOpacityConverter}}"
               >
               <Grid>
                 <Grid.RowDefinitions>
@@ -122,11 +176,30 @@
                   <RowDefinition Height="Auto" />
                   <RowDefinition Height="*" />
                   <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+
+                <!-- Availability Badge -->
+                <Border 
+                  Grid.Row="0"
+                  Background="#D32F2F"
+                  CornerRadius="3"
+                  Padding="6,2"
+                  HorizontalAlignment="Right"
+                  Visibility="{Binding Disponibilite, Converter={StaticResource BoolToInvisibilityConverter}}"
+                  Margin="0,0,0,8"
+                  >
+                  <TextBlock 
+                    Text="INDISPONIBLE"
+                    FontSize="10"
+                    FontWeight="Bold"
+                    Foreground="White"
+                    />
+                </Border>
 
                 <!-- Room Name -->
                 <TextBlock 
-                  Grid.Row="0"
+                  Grid.Row="1"
                   Text="{Binding Nom}" 
                   FontSize="16" 
                   FontWeight="Bold"
@@ -135,7 +208,7 @@
                   />
 
                 <!-- Room Info (Capacity, Floor, Type) -->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
                   <TextBlock 
                     Text="{Binding Capacite, StringFormat='Capacite: {0} pers.'}" 
                     FontSize="12"
@@ -156,7 +229,7 @@
 
                 <!-- Description -->
                 <TextBlock 
-                  Grid.Row="2"
+                  Grid.Row="3"
                   Text="{Binding Description}" 
                   FontSize="12"
                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
@@ -167,11 +240,12 @@
 
                 <!-- Reserve Button -->
                 <ui:Button 
-                  Grid.Row="3"
+                  Grid.Row="4"
                   Content="Reserver"
                   HorizontalAlignment="Stretch"
                   Command="{Binding DataContext.ViewModel.ReserveCommand, RelativeSource={RelativeSource AncestorType=local:RoomsPage}}"
                   CommandParameter="{Binding}"
+                  IsEnabled="{Binding Disponibilite}"
                   />
               </Grid>
             </Border>

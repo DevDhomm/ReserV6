@@ -56,13 +56,13 @@
         <Style TargetType="{x:Type DataGridRow}">
           <Style.Triggers>
             <DataTrigger Binding="{Binding ., Converter={StaticResource ReservationStatusDynamicConverter}}" Value="EnCours">
-              <Setter Property="Background" Value="#C8FFC8" />
+                            <Setter Property="Background" Value="#3BC1A8" />
             </DataTrigger>
             <DataTrigger Binding="{Binding ., Converter={StaticResource ReservationStatusDynamicConverter}}" Value="Terminee">
-              <Setter Property="Background" Value="#DCDCDC" />
+                            <Setter Property="Background" Value="#BFC6C4" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding ., Converter={StaticResource ReservationStatusDynamicConverter}}" Value="Annulee">
-              <Setter Property="Background" Value="#FFC8C8" />
+            <DataTrigger Binding="{Binding ., Converter={StaticResource ReservationStatusDynamicConverter}}" Value="Annulée">
+                            <Setter Property="Background" Value="#F26076" />
             </DataTrigger>
           </Style.Triggers>
         </Style>
