@@ -294,7 +294,7 @@ public class ReservationExamples
         {
             var reservations = _repositories.Reservations.GetSalleReservations(room.Id);
             Console.WriteLine($"\n{room.Nom} ({room.Capacite} places):");
-            
+
             if (reservations.Count == 0)
             {
                 Console.WriteLine("  Aucune réservation");
@@ -303,9 +303,9 @@ public class ReservationExamples
             {
                 foreach (var res in reservations)
                 {
-                    var creneau = _repositories.Creneaux.GetCreneauById(res.CreneauId);
                     var user = _repositories.Users.GetUserById(res.UserId);
-                    Console.WriteLine($"  [{res.Statut}] {creneau?.Debut:dd/MM HH:mm} - {user?.Nom}");
+                    var startTime = res.DateTimeDebut;
+                    Console.WriteLine($"  [{res.Statut}] {startTime:dd/MM HH:mm} - {user?.Nom}");
                 }
             }
         }

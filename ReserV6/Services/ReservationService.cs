@@ -16,6 +16,55 @@ namespace ReserV6.Services
         }
 
         /// <summary>
+        /// Crée une nouvelle réservation avec dates et horaires spécifiques
+        /// </summary>
+        public (bool Success, string Message, int ReservationId) CreateReservationWithTimeRange(
+            int userId, int salleId, DateTime dateDebut, DateTime dateFin, 
+            TimeSpan heureDebut, TimeSpan heureFin, string motif)
+        {
+            // Vérifier que l'utilisateur existe
+            var user = _repositories.Users.GetUserById(userId);
+            if (user == null)
+                return (false, "Utilisateur non trouvé", 0);
+
+            // Vérifier que la salle existe et est disponible
+            var salle = _repositories.Salles.GetSalleById(salleId);
+            if (salle == null)
+                return (false, "Salle non trouvée", 0);
+
+            if (!salle.Disponibilite)
+                return (false, "La salle n'est pas disponible", 0);
+
+            // Vérifier qu'il n'y a pas de conflit
+            var startDateTime = dateDebut.Date.Add(heureDebut);
+            var endDateTime = dateFin.Date.Add(heureFin);
+            if (_repositories.Reservations.HasTimeConflict(salleId, startDateTime, endDateTime))
+                return (false, "Cette salle a déjà une réservation pour cette période", 0);
+
+            // Créer la réservation (par défaut confirmée)
+            var reservation = new Reservation
+            {
+                DateReservation = DateTime.Now,
+                Motif = motif,
+                Statut = ReservationStatut.Confirmée,
+                UserId = userId,
+                SalleId = salleId,
+                CreneauId = null,
+                DateDebut = dateDebut,
+                DateFin = dateFin,
+                HeureDebut = heureDebut,
+                HeureFin = heureFin
+            };
+
+            int reservationId = _repositories.Reservations.CreateReservation(reservation);
+
+            // Ajouter à l'historique
+            _repositories.Historiques.AddAction(reservationId, "Réservation créée et confirmée");
+
+            return (true, "Réservation créée avec succès", reservationId);
+        }
+
+        /// <summary>
         /// Crée une nouvelle réservation
         /// </summary>
         public (bool Success, string Message, int ReservationId) CreateReservation(
@@ -51,7 +100,11 @@ namespace ReserV6.Services
                 Statut = ReservationStatut.Confirmée,
                 UserId = userId,
                 SalleId = salleId,
-                CreneauId = creneauId
+                CreneauId = creneauId,
+                DateDebut = creneau.Debut.Date,
+                DateFin = creneau.Fin.Date,
+                HeureDebut = creneau.Debut.TimeOfDay,
+                HeureFin = creneau.Fin.TimeOfDay
             };
 
             int reservationId = _repositories.Reservations.CreateReservation(reservation);
@@ -88,6 +141,56 @@ namespace ReserV6.Services
         }
 
         /// <summary>
+        /// Modifie une réservation existante avec plage horaire
+        /// </summary>
+        public (bool Success, string Message) ModifyReservationWithTimeRange(
+            int reservationId, DateTime? newDateDebut = null, DateTime? newDateFin = null, 
+            TimeSpan? newHeureDebut = null, TimeSpan? newHeureFin = null, string? newMotif = null)
+        {
+            var reservation = _repositories.Reservations.GetReservationById(reservationId);
+            if (reservation == null)
+                return (false, "Réservation non trouvée");
+
+            if (reservation.Statut == ReservationStatut.Annulée)
+                return (false, "Impossible de modifier une réservation annulée");
+
+            if (reservation.Statut == ReservationStatut.Terminée)
+                return (false, "Impossible de modifier une réservation terminée");
+
+            // Appliquer les modifications
+            DateTime dateDebut = newDateDebut ?? reservation.DateDebut;
+            DateTime dateFin = newDateFin ?? reservation.DateFin;
+            TimeSpan heureDebut = newHeureDebut ?? reservation.HeureDebut;
+            TimeSpan heureFin = newHeureFin ?? reservation.HeureFin;
+
+            // Vérifier les conflits si la période change
+            if (newDateDebut.HasValue || newDateFin.HasValue || newHeureDebut.HasValue || newHeureFin.HasValue)
+            {
+                var startDateTime = dateDebut.Date.Add(heureDebut);
+                var endDateTime = dateFin.Date.Add(heureFin);
+                if (_repositories.Reservations.HasTimeConflict(reservation.SalleId, startDateTime, endDateTime, reservationId))
+                {
+                    return (false, "Cette salle a déjà une réservation pour cette période");
+                }
+            }
+
+            reservation.DateDebut = dateDebut;
+            reservation.DateFin = dateFin;
+            reservation.HeureDebut = heureDebut;
+            reservation.HeureFin = heureFin;
+            if (!string.IsNullOrEmpty(newMotif))
+                reservation.Motif = newMotif;
+
+            if (_repositories.Reservations.UpdateReservation(reservation))
+            {
+                _repositories.Historiques.AddAction(reservationId, "Réservation modifiée");
+                return (true, "Réservation modifiée avec succès");
+            }
+
+            return (false, "Erreur lors de la modification de la réservation");
+        }
+
+        /// <summary>
         /// Modifie une réservation existante
         /// </summary>
         public (bool Success, string Message) ModifyReservation(
@@ -105,11 +208,11 @@ namespace ReserV6.Services
 
             // Appliquer les modifications
             int salleId = newSalleId ?? reservation.SalleId;
-            int creneauId = newCreneauId ?? reservation.CreneauId;
+            int? creneauId = newCreneauId ?? reservation.CreneauId;
 
             // Vérifier les conflits si la salle ou le créneau change
-            if ((newSalleId.HasValue || newCreneauId.HasValue) &&
-                _repositories.Reservations.HasConflict(salleId, creneauId, reservationId))
+            if ((newSalleId.HasValue || newCreneauId.HasValue) && creneauId.HasValue &&
+                _repositories.Reservations.HasConflict(salleId, creneauId.Value, reservationId))
             {
                 return (false, "Cette salle est déjà réservée pour ce créneau");
             }

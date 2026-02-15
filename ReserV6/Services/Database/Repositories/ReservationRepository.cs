@@ -28,9 +28,9 @@ namespace ReserV6.Services.Database.Repositories
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id
+                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id, dateDebut, dateFin, heureDebut, heureFin
                         FROM Reservation
-                        ORDER BY dateReservation DESC";
+                        ORDER BY dateDebut DESC";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -56,7 +56,7 @@ namespace ReserV6.Services.Database.Repositories
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id
+                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id, dateDebut, dateFin, heureDebut, heureFin
                         FROM Reservation
                         WHERE id = @id";
                     command.Parameters.AddWithValue("@id", id);
@@ -87,10 +87,10 @@ namespace ReserV6.Services.Database.Repositories
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id
+                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id, dateDebut, dateFin, heureDebut, heureFin
                         FROM Reservation
                         WHERE user_id = @userId
-                        ORDER BY dateReservation DESC";
+                        ORDER BY dateDebut DESC";
                     command.Parameters.AddWithValue("@userId", userId);
 
                     using (var reader = command.ExecuteReader())
@@ -119,10 +119,10 @@ namespace ReserV6.Services.Database.Repositories
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id
+                        SELECT id, dateReservation, motif, statut, user_id, salle_id, creneau_id, dateDebut, dateFin, heureDebut, heureFin
                         FROM Reservation
                         WHERE salle_id = @salleId
-                        ORDER BY dateReservation DESC";
+                        ORDER BY dateDebut DESC";
                     command.Parameters.AddWithValue("@salleId", salleId);
 
                     using (var reader = command.ExecuteReader())
@@ -149,14 +149,18 @@ namespace ReserV6.Services.Database.Repositories
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                        INSERT INTO Reservation (dateReservation, motif, statut, user_id, salle_id, creneau_id)
-                        VALUES (@dateReservation, @motif, @statut, @user_id, @salle_id, @creneau_id)";
+                        INSERT INTO Reservation (dateReservation, motif, statut, user_id, salle_id, creneau_id, dateDebut, dateFin, heureDebut, heureFin)
+                        VALUES (@dateReservation, @motif, @statut, @user_id, @salle_id, @creneau_id, @dateDebut, @dateFin, @heureDebut, @heureFin)";
                     command.Parameters.AddWithValue("@dateReservation", reservation.DateReservation);
                     command.Parameters.AddWithValue("@motif", reservation.Motif ?? string.Empty);
                     command.Parameters.AddWithValue("@statut", reservation.Statut.ToString());
                     command.Parameters.AddWithValue("@user_id", reservation.UserId);
                     command.Parameters.AddWithValue("@salle_id", reservation.SalleId);
-                    command.Parameters.AddWithValue("@creneau_id", reservation.CreneauId);
+                    command.Parameters.AddWithValue("@creneau_id", reservation.CreneauId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@dateDebut", reservation.DateDebut);
+                    command.Parameters.AddWithValue("@dateFin", reservation.DateFin);
+                    command.Parameters.AddWithValue("@heureDebut", reservation.HeureDebut.ToString(@"hh\:mm\:ss"));
+                    command.Parameters.AddWithValue("@heureFin", reservation.HeureFin.ToString(@"hh\:mm\:ss"));
 
                     command.ExecuteNonQuery();
                     using (var lastIdCommand = connection.CreateCommand())
@@ -202,13 +206,17 @@ namespace ReserV6.Services.Database.Repositories
                 {
                     command.CommandText = @"
                         UPDATE Reservation
-                        SET motif = @motif, statut = @statut, salle_id = @salle_id, creneau_id = @creneau_id
+                        SET motif = @motif, statut = @statut, salle_id = @salle_id, creneau_id = @creneau_id, dateDebut = @dateDebut, dateFin = @dateFin, heureDebut = @heureDebut, heureFin = @heureFin
                         WHERE id = @id";
                     command.Parameters.AddWithValue("@id", reservation.Id);
                     command.Parameters.AddWithValue("@motif", reservation.Motif ?? string.Empty);
                     command.Parameters.AddWithValue("@statut", reservation.Statut.ToString());
                     command.Parameters.AddWithValue("@salle_id", reservation.SalleId);
-                    command.Parameters.AddWithValue("@creneau_id", reservation.CreneauId);
+                    command.Parameters.AddWithValue("@creneau_id", reservation.CreneauId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@dateDebut", reservation.DateDebut);
+                    command.Parameters.AddWithValue("@dateFin", reservation.DateFin);
+                    command.Parameters.AddWithValue("@heureDebut", reservation.HeureDebut.ToString(@"hh\:mm\:ss"));
+                    command.Parameters.AddWithValue("@heureFin", reservation.HeureFin.ToString(@"hh\:mm\:ss"));
 
                     return command.ExecuteNonQuery() > 0;
                 }
@@ -363,10 +371,15 @@ namespace ReserV6.Services.Database.Repositories
                     command.CommandText = @"
                         SELECT COUNT(*) as count 
                         FROM Reservation r
-                        JOIN Creneau c ON r.creneau_id = c.id
                         WHERE r.salle_id = @salleId
                           AND r.statut IN ('EnAttente', 'Confirmée')
-                          AND NOT (c.fin <= @startTime OR c.debut >= @endTime)";
+                          AND NOT (
+                            (r.dateFin < @startDate) OR
+                            (r.dateDebut > @endDate) OR
+                            (r.dateDebut = @startDate AND TIME(r.heureFin) <= TIME(@startTime)) OR
+                            (r.dateFin = @endDate AND TIME(r.heureDebut) >= TIME(@endTime)) OR
+                            (r.dateDebut = @startDate AND r.dateFin = @startDate AND (TIME(r.heureFin) <= TIME(@startTime) OR TIME(r.heureDebut) >= TIME(@endTime)))
+                          )";
 
                     if (excludeReservationId.HasValue)
                     {
@@ -375,8 +388,10 @@ namespace ReserV6.Services.Database.Repositories
                     }
 
                     command.Parameters.AddWithValue("@salleId", salleId);
-                    command.Parameters.AddWithValue("@startTime", startTime);
-                    command.Parameters.AddWithValue("@endTime", endTime);
+                    command.Parameters.AddWithValue("@startDate", startTime.Date);
+                    command.Parameters.AddWithValue("@endDate", endTime.Date);
+                    command.Parameters.AddWithValue("@startTime", startTime.TimeOfDay.ToString(@"hh\:mm\:ss"));
+                    command.Parameters.AddWithValue("@endTime", endTime.TimeOfDay.ToString(@"hh\:mm\:ss"));
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -401,7 +416,11 @@ namespace ReserV6.Services.Database.Repositories
                 Statut = ParseReservationStatut(reader.GetString(3)),
                 UserId = reader.GetInt32(4),
                 SalleId = reader.GetInt32(5),
-                CreneauId = reader.GetInt32(6)
+                CreneauId = reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                DateDebut = DateTime.Parse(reader.GetString(7)),
+                DateFin = DateTime.Parse(reader.GetString(8)),
+                HeureDebut = TimeSpan.Parse(reader.GetString(9)),
+                HeureFin = TimeSpan.Parse(reader.GetString(10))
             };
         }
 
@@ -421,9 +440,10 @@ namespace ReserV6.Services.Database.Repositories
                 Capacite = reader.GetInt32(reader.GetOrdinal("capacite")),
                 SalleType = reader.GetString(reader.GetOrdinal("salle_type")),
                 Etage = reader.GetInt32(reader.GetOrdinal("etage")),
-                CreneauDebut = DateTime.Parse(reader.GetString(reader.GetOrdinal("creneau_debut"))),
-                CreneauFin = DateTime.Parse(reader.GetString(reader.GetOrdinal("creneau_fin"))),
-                DureeHeures = reader.GetInt32(reader.GetOrdinal("duree_heures"))
+                DateDebut = DateTime.Parse(reader.GetString(reader.GetOrdinal("dateDebut"))),
+                DateFin = DateTime.Parse(reader.GetString(reader.GetOrdinal("dateFin"))),
+                HeureDebut = TimeSpan.Parse(reader.GetString(reader.GetOrdinal("heureDebut"))),
+                HeureFin = TimeSpan.Parse(reader.GetString(reader.GetOrdinal("heureFin")))
             };
         }
 

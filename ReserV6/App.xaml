@@ -21,6 +21,7 @@
       <converters:ReservationStatusDynamicConverter x:Key="ReservationStatusDynamicConverter" />
       <converters:ReservationRowColorConverter x:Key="ReservationRowColorConverter" />
       <converters:ReservationCanEditConverter x:Key="ReservationCanEditConverter" />
+      <converters:ReservationStatusBadgeColorConverter x:Key="ReservationStatusBadgeColorConverter" />
       <converters:AvailabilityOpacityConverter x:Key="AvailabilityOpacityConverter" />
       <converters:BoolToInvisibilityConverter x:Key="BoolToInvisibilityConverter" />
     </ResourceDictionary>

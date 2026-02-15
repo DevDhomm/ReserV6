@@ -117,8 +117,6 @@ namespace ReserV6.ViewModels.Windows
                     return;
                 }
 
-                // 🆕 Support des horaires personnalisés avec dates multi-jours
-                Creneau? creneauToUse = null;
                 DateTime startDateTime;
                 DateTime endDateTime;
 
@@ -166,14 +164,6 @@ namespace ReserV6.ViewModels.Windows
                         );
                         return;
                     }
-
-                    // 🆕 Créer un créneau temporaire pour cette réservation
-                    creneauToUse = new Creneau
-                    {
-                        Debut = startDateTime,
-                        Fin = endDateTime,
-                        DateCreation = DateTime.Now
-                    };
                 }
                 else
                 {
@@ -184,7 +174,8 @@ namespace ReserV6.ViewModels.Windows
                         return;
                     }
 
-                    creneauToUse = _selectedCreneau;
+                    startDateTime = _selectedCreneau.Debut;
+                    endDateTime = _selectedCreneau.Fin;
 
                     // Double-check pour conflits
                     bool hasConflict = await Task.Run(() =>
@@ -214,17 +205,7 @@ namespace ReserV6.ViewModels.Windows
                     return;
                 }
 
-                // 🆕 Si c'est un créneau personnalisé, le créer d'abord
-                if (_useCustomTime && creneauToUse.Id == 0)
-                {
-                    creneauToUse.DateCreation = DateTime.Now;
-                    creneauToUse.Id = await Task.Run(() =>
-                        _repositoryManager.Creneaux.AddCreneau(creneauToUse));
-
-                    System.Diagnostics.Debug.WriteLine($"ReservationDialogViewModel: Created dynamic creneau with ID {creneauToUse.Id}");
-                }
-
-                // Create the reservation
+                // Create the reservation with separated date and time fields
                 var reservation = new Reservation
                 {
                     DateReservation = DateTime.Now,
@@ -232,7 +213,11 @@ namespace ReserV6.ViewModels.Windows
                     Statut = ReservationStatut.Confirmée,
                     UserId = user.Id,
                     SalleId = _selectedSalle.Id,
-                    CreneauId = creneauToUse.Id
+                    CreneauId = _useCustomTime ? null : _selectedCreneau?.Id,
+                    DateDebut = startDateTime.Date,
+                    DateFin = endDateTime.Date,
+                    HeureDebut = startDateTime.TimeOfDay,
+                    HeureFin = endDateTime.TimeOfDay
                 };
 
                 var reservationId = await Task.Run(() => _repositoryManager.Reservations.CreateReservation(reservation));
@@ -241,9 +226,9 @@ namespace ReserV6.ViewModels.Windows
 
                 if (reservationId > 0)
                 {
-                    string timeRange = _useCustomTime
-                        ? $"Du {creneauToUse.Debut:dd/MM/yyyy HH:mm} au {creneauToUse.Fin:dd/MM/yyyy HH:mm}"
-                        : $"Du {creneauToUse.Debut:dd/MM/yyyy HH:mm} au {creneauToUse.Fin:HH:mm}";
+                    string timeRange = startDateTime.Date == endDateTime.Date
+                        ? $"Le {startDateTime:dd/MM/yyyy} de {startDateTime:HH:mm} à {endDateTime:HH:mm}"
+                        : $"Du {startDateTime:dd/MM/yyyy HH:mm} au {endDateTime:dd/MM/yyyy HH:mm}";
 
                     System.Windows.MessageBox.Show(
                         $"Reservation confirmee pour la salle {_selectedSalle.Nom}\n{timeRange}",
@@ -286,7 +271,7 @@ namespace ReserV6.ViewModels.Windows
                     _bookedCreneauIds = await Task.Run(() => 
                     {
                         var reservations = repositoryManager.Reservations.GetSalleReservations(salle.Id);
-                        return reservations.Select(r => r.CreneauId).ToHashSet();
+                        return reservations.Where(r => r.CreneauId.HasValue).Select(r => r.CreneauId.Value).ToHashSet();
                     });
 
                     var available = creneaux

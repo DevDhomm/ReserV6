@@ -39,14 +39,8 @@ namespace ReserV6.Services
 
                 foreach (var reservation in allReservations)
                 {
-                    if (reservation.Creneau == null)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"ReservationStatusService: Reservation {reservation.Id} has no creneau");
-                        continue;
-                    }
-
-                    var creneauFin = reservation.Creneau.Fin;
-                    var creneauDebut = reservation.Creneau.Debut;
+                    var reservationStart = reservation.DateTimeDebut;
+                    var reservationEnd = reservation.DateTimeFin;
                     var newStatus = reservation.Statut;
                     bool statusChanged = false;
 
@@ -57,7 +51,7 @@ namespace ReserV6.Services
                         continue;
                     }
 
-                    if (now >= creneauFin)
+                    if (now >= reservationEnd)
                     {
                         // La réservation est terminée
                         if (reservation.Statut != ReservationStatut.Terminée)
@@ -66,7 +60,7 @@ namespace ReserV6.Services
                             statusChanged = true;
                         }
                     }
-                    else if (now >= creneauDebut && now < creneauFin)
+                    else if (now >= reservationStart && now < reservationEnd)
                     {
                         // La réservation est en cours
                         if (reservation.Statut != ReservationStatut.EnCours)
@@ -75,7 +69,7 @@ namespace ReserV6.Services
                             statusChanged = true;
                         }
                     }
-                    else if (now < creneauDebut && reservation.Statut == ReservationStatut.EnCours)
+                    else if (now < reservationStart && reservation.Statut == ReservationStatut.EnCours)
                     {
                         // La réservation était en cours mais n'a plus commencé?? (cas rare)
                         // Ne pas changer le statut

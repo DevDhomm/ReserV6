@@ -72,12 +72,25 @@ namespace ReserV6.Models
         public ReservationStatut Statut { get; set; } = ReservationStatut.Confirmée;
         public int UserId { get; set; }
         public int SalleId { get; set; }
-        public int CreneauId { get; set; }
+        public int? CreneauId { get; set; }
+
+        // Nouvelles propriétés pour support multi-jours avec horaires spécifiques
+        public DateTime DateDebut { get; set; }
+        public DateTime DateFin { get; set; }
+        public TimeSpan HeureDebut { get; set; }
+        public TimeSpan HeureFin { get; set; }
 
         public User? User { get; set; }
         public Salle? Salle { get; set; }
         public Creneau? Creneau { get; set; }
         public ICollection<Historique> Historiques { get; set; } = new List<Historique>();
+
+        /// <summary>
+        /// Propriétés calculées pour la plage horaire complète
+        /// </summary>
+        public DateTime DateTimeDebut => DateDebut.Date.Add(HeureDebut);
+        public DateTime DateTimeFin => DateFin.Date.Add(HeureFin);
+        public TimeSpan DureeTotal => DateTimeFin - DateTimeDebut;
     }
 
     /// <summary>
@@ -122,9 +135,17 @@ namespace ReserV6.Models
         public int Capacite { get; set; }
         public string SalleType { get; set; } = string.Empty;
         public int Etage { get; set; }
-        public DateTime CreneauDebut { get; set; }
-        public DateTime CreneauFin { get; set; }
-        public int DureeHeures { get; set; }
+
+        // Nouveaux champs pour dates et heures séparées
+        public DateTime DateDebut { get; set; }
+        public DateTime DateFin { get; set; }
+        public TimeSpan HeureDebut { get; set; }
+        public TimeSpan HeureFin { get; set; }
+
+        // Propriétés héritées (pour compatibilité)
+        public DateTime CreneauDebut => DateDebut.Date.Add(HeureDebut);
+        public DateTime CreneauFin => DateFin.Date.Add(HeureFin);
+        public int DureeHeures => (int)CreneauFin.Subtract(CreneauDebut).TotalHours;
 
         /// <summary>
         /// Retourne vrai si le statut est "terminal" (Annulée ou Terminée)

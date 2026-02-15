@@ -109,4 +109,46 @@ namespace ReserV6.Converters
             throw new NotImplementedException();
         }
     }
+
+    /// <summary>
+    /// Converter pour la couleur de badge du statut
+    /// </summary>
+    public class ReservationStatusBadgeColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is not ReservationComplete reservation)
+                return Brushes.Gray;
+
+            var now = DateTime.Now;
+            var creneauFin = reservation.CreneauFin;
+            var creneauDebut = reservation.CreneauDebut;
+
+            string status;
+            if (now >= creneauFin)
+                status = "Terminee";
+            else if (now >= creneauDebut && now < creneauFin)
+                status = "EnCours";
+            else if (reservation.Statut == "Annulee")
+                status = "Annulee";
+            else
+                status = reservation.Statut;
+
+            // Retourner une couleur basée sur le statut pour le badge
+            return status switch
+            {
+                "EnCours" => new SolidColorBrush(Color.FromRgb(59, 193, 168)), // Teal vif
+                "Terminee" => new SolidColorBrush(Color.FromRgb(191, 198, 196)), // Gris
+                "Annulee" => new SolidColorBrush(Color.FromRgb(242, 96, 118)), // Rose/Rouge
+                "Confirmee" => new SolidColorBrush(Color.FromRgb(33, 150, 243)), // Bleu
+                "EnAttente" => new SolidColorBrush(Color.FromRgb(255, 152, 0)), // Orange
+                _ => Brushes.Gray
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

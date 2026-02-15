@@ -28,6 +28,13 @@ namespace ReserV6.ViewModels.Pages
             "Annulee"
         };
 
+        // 🆕 Filtres par texte
+        [ObservableProperty]
+        private string _salleNameFilter = string.Empty;
+
+        [ObservableProperty]
+        private string _motifFilter = string.Empty;
+
         [ObservableProperty]
         private IEnumerable<ReservationComplete> _filteredReservations = [];
 
@@ -234,7 +241,7 @@ namespace ReserV6.ViewModels.Pages
         }
 
         /// <summary>
-        /// Applique le filtrage par statut et équipement à la liste des réservations
+        /// Applique le filtrage par statut, motif et nom de salle à la liste des réservations
         /// </summary>
         private void ApplyStatusFilter()
         {
@@ -264,10 +271,26 @@ namespace ReserV6.ViewModels.Pages
                     .ToList();
             }
 
+            // Filtrer par nom de salle (recherche insensible à la casse)
+            if (!string.IsNullOrWhiteSpace(SalleNameFilter))
+            {
+                filtered = filtered
+                    .Where(r => r.SalleNom.Contains(SalleNameFilter, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            // Filtrer par motif (recherche insensible à la casse)
+            if (!string.IsNullOrWhiteSpace(MotifFilter))
+            {
+                filtered = filtered
+                    .Where(r => r.Motif.Contains(MotifFilter, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
             FilteredReservations = filtered;
 
             System.Diagnostics.Debug.WriteLine(
-                $"ReservationsViewModel: Filter applied, showing {FilteredReservations.Count()} of {Reservations.Count()} reservations"
+                $"ReservationsViewModel: Filters applied - Status: {SelectedStatusFilter}, Salle: {SalleNameFilter}, Motif: {MotifFilter} - showing {FilteredReservations.Count()} of {Reservations.Count()} reservations"
             );
         }
 
@@ -277,6 +300,24 @@ namespace ReserV6.ViewModels.Pages
         partial void OnSelectedStatusFilterChanged(string oldValue, string newValue)
         {
             System.Diagnostics.Debug.WriteLine($"ReservationsViewModel: Status filter changed to {newValue}");
+            ApplyStatusFilter();
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement du filtre de nom de salle
+        /// </summary>
+        partial void OnSalleNameFilterChanged(string oldValue, string newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"ReservationsViewModel: Salle name filter changed to {newValue}");
+            ApplyStatusFilter();
+        }
+
+        /// <summary>
+        /// Handler automatique pour le changement du filtre de motif
+        /// </summary>
+        partial void OnMotifFilterChanged(string oldValue, string newValue)
+        {
+            System.Diagnostics.Debug.WriteLine($"ReservationsViewModel: Motif filter changed to {newValue}");
             ApplyStatusFilter();
         }
 

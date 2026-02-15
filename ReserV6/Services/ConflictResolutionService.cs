@@ -49,22 +49,13 @@ namespace ReserV6.Services
 
             foreach (var reservation in allReservations)
             {
-                if (reservation.Creneau == null)
-                {
-                    var creneau = _repositoryManager.Creneaux.GetCreneauById(reservation.CreneauId);
-                    if (creneau != null)
-                    {
-                        reservation.Creneau = creneau;
-                    }
-                }
+                var resStart = reservation.DateTimeDebut;
+                var resEnd = reservation.DateTimeFin;
 
-                if (reservation.Creneau != null)
+                // Vérifier le chevauchement
+                if (!(resEnd <= startTime || resStart >= endTime))
                 {
-                    // Vérifier le chevauchement
-                    if (!(reservation.Creneau.Fin <= startTime || reservation.Creneau.Debut >= endTime))
-                    {
-                        conflictingReservations.Add(reservation);
-                    }
+                    conflictingReservations.Add(reservation);
                 }
             }
 
@@ -96,15 +87,14 @@ namespace ReserV6.Services
 
             foreach (var conflict in conflicts)
             {
-                if (conflict.Creneau != null)
+                var resStart = conflict.DateTimeDebut;
+                var resEnd = conflict.DateTimeFin;
+                message += $"• {resStart:dd/MM/yyyy HH:mm} - {resEnd:dd/MM/yyyy HH:mm}";
+                if (!string.IsNullOrEmpty(conflict.Motif))
                 {
-                    message += $"• {conflict.Creneau.Debut:dd/MM/yyyy HH:mm} - {conflict.Creneau.Fin:HH:mm}";
-                    if (!string.IsNullOrEmpty(conflict.Motif))
-                    {
-                        message += $" ({conflict.Motif})";
-                    }
-                    message += "\n";
+                    message += $" ({conflict.Motif})";
                 }
+                message += "\n";
             }
 
             return message;

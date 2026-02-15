@@ -52,7 +52,11 @@ CREATE TABLE IF NOT EXISTS Reservation (
     statut TEXT NOT NULL DEFAULT 'Confirmée' CHECK(statut IN ('En attente', 'Confirmée', 'Annulée', 'Terminée')),
     user_id INTEGER NOT NULL,
     salle_id INTEGER NOT NULL,
-    creneau_id INTEGER NOT NULL,
+    creneau_id INTEGER,
+    dateDebut TEXT NOT NULL,
+    dateFin TEXT NOT NULL,
+    heureDebut TEXT NOT NULL,
+    heureFin TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES "User"(id) ON DELETE CASCADE,
     FOREIGN KEY (salle_id) REFERENCES Salle(id) ON DELETE CASCADE,
     FOREIGN KEY (creneau_id) REFERENCES Creneau(id) ON DELETE CASCADE
@@ -88,14 +92,18 @@ SELECT
     s.type AS salle_type,
     s.etage,
     s.disponibilite,
-    c.id AS creneau_id,
-    c.debut AS creneau_debut,
-    c.fin AS creneau_fin,
-    CAST((JULIANDAY(c.fin) - JULIANDAY(c.debut)) * 24 AS INTEGER) AS duree_heures
+    r.creneau_id,
+    r.dateDebut,
+    r.dateFin,
+    r.heureDebut,
+    r.heureFin,
+    COALESCE(c.debut, datetime(r.dateDebut || ' ' || r.heureDebut)) AS creneau_debut,
+    COALESCE(c.fin, datetime(r.dateFin || ' ' || r.heureFin)) AS creneau_fin,
+    CAST((JULIANDAY(COALESCE(c.fin, datetime(r.dateFin || ' ' || r.heureFin))) - JULIANDAY(COALESCE(c.debut, datetime(r.dateDebut || ' ' || r.heureDebut)))) * 24 AS INTEGER) AS duree_heures
 FROM Reservation r
 JOIN "User" u ON r.user_id = u.id
 JOIN Salle s ON r.salle_id = s.id
-JOIN Creneau c ON r.creneau_id = c.id;
+LEFT JOIN Creneau c ON r.creneau_id = c.id;
 
 -- Vue: Salles avec Équipements
 CREATE VIEW IF NOT EXISTS v_salles_equipements AS
